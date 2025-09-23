@@ -100,7 +100,14 @@ function frm_emails_entry_shortcode($atts = []) {
                         <div class="fel-meta">
                             <div class="fel-row"><div class="fel-label">From</div><div><?php echo esc_html($from); ?></div></div>
                             <div class="fel-row"><div class="fel-label">To</div><div style="word-break:break-word;"><?php echo esc_html($to); ?></div></div>
-                            <div class="fel-row"><div class="fel-label">Status</div><div><span class="fel-badge"><?php echo $status; ?></span></div></div>
+                            <div class="fel-row">
+                                <div class="fel-label">
+                                    Status
+                                </div>
+                                <div>
+                                    <?php echo do_shortcode('[frm-email-status status="' . esc_attr($status) . '"]'); ?>
+                                </div>
+                            </div>
                             <div class="fel-row"><div class="fel-label">Date</div><div><?php echo esc_html($dateFmt); ?></div></div>
                         </div>
                         <div class="fel-actions">

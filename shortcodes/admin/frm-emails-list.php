@@ -205,7 +205,9 @@ function frm_emails_list_shortcode($atts = []) {
                     </td>
                     <td><?php echo esc_html($from); ?></td>
                     <td style="max-width:320px; word-break:break-word;"><?php echo esc_html($to); ?></td>
-                    <td><?php echo $status; ?></td>
+                    <td>
+                        <?php echo do_shortcode('[frm-email-status status="' . esc_attr($status) . '"]'); ?>
+                    </td>
                     <td><?php echo esc_html($dateFmt); ?></td>
                 </tr>
             <?php endforeach; endif; ?>
