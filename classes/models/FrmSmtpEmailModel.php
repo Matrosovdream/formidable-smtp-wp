@@ -177,4 +177,101 @@ class FrmSmtpEmailModel extends FrmSmptAbstractModel {
         if ( is_wp_error( $rows ) ) { return $rows; }
         return $rows[0] ?? null;
     }
+
+    /**
+     * Bulk upsert into frm_emails_log.
+     * - Unique key: message_id
+     * - Accepts rows with keys matching table columns below.
+     * - Normalizes types (ints, dates), arrays (people/email_to), and status (text or int).
+     */
+    public function multipleUpdateCreate( array $rows ) {
+        $cols = [
+            'entry_id',
+            'form_id',
+            'subject',
+            'message_id',
+            'email_from',
+            'email_to',
+            'people',
+            'headers',
+            'error_text',
+            'content_plain',
+            'content_html',
+            'status',
+            'date_sent',
+            'mailer',
+            'attachments',
+            'initiator_name',
+            'initiator_file',
+        ];
+
+        $formats = [
+            'entry_id'       => '%d',
+            'form_id'        => '%d',
+            'subject'        => '%s',
+            'message_id'     => '%s',
+            'email_from'     => '%s',
+            'email_to'       => '%s',
+            'people'         => '%s',
+            'headers'        => '%s',
+            'error_text'     => '%s',
+            'content_plain'  => '%s',
+            'content_html'   => '%s',
+            'status'         => '%d',
+            'date_sent'      => '%s',
+            'mailer'         => '%s',
+            'attachments'    => '%d',
+            'initiator_name' => '%s',
+            'initiator_file' => '%s',
+        ];
+
+        foreach ( $rows as &$r ) {
+            // entry_id / form_id -> ints or NULL
+            if ( array_key_exists( 'entry_id', $r ) ) {
+                $r['entry_id'] = ($r['entry_id'] === '' || $r['entry_id'] === null) ? null : (int) $r['entry_id'];
+            }
+            if ( array_key_exists( 'form_id', $r ) ) {
+                $r['form_id'] = ($r['form_id'] === '' || $r['form_id'] === null) ? null : (int) $r['form_id'];
+            }
+
+            // attachments -> int
+            if ( array_key_exists( 'attachments', $r ) ) {
+                $r['attachments'] = (int) $r['attachments'];
+            }
+
+            // email_to can arrive as array -> join by comma
+            if ( array_key_exists( 'email_to', $r ) && is_array( $r['email_to'] ) ) {
+                $r['email_to'] = implode( ',', array_filter( array_map( 'trim', $r['email_to'] ) ) );
+            }
+
+            // people can arrive as array -> json encode
+            if ( array_key_exists( 'people', $r ) && is_array( $r['people'] ) ) {
+                $r['people'] = wp_json_encode( $r['people'] );
+            }
+
+            // date_sent -> MySQL DATETIME
+            if ( array_key_exists( 'date_sent', $r ) && $r['date_sent'] !== '' && $r['date_sent'] !== null ) {
+                $r['date_sent'] = $this->dateToMysql( (string) $r['date_sent'] );
+            }
+
+            // Ensure message_id present (upsert key)
+            if ( empty( $r['message_id'] ) ) {
+                // Avoid breaking upsert: you may choose to skip or synthesize one.
+                // Here we skip rows without message_id to avoid duplicates.
+                $r['__skip__'] = true;
+            }
+        }
+        unset( $r );
+
+        // Drop rows marked to skip (no message_id)
+        $rows = array_values( array_filter( $rows, static fn($x) => empty($x['__skip__']) ) );
+
+        if ( empty( $rows ) ) {
+            return 0; // nothing to do
+        }
+
+        return $this->multipleUpdateCreateAbstract( $rows, $cols, $formats, $uniqueKey = 'message_id' );
+    }
+
+
 }
