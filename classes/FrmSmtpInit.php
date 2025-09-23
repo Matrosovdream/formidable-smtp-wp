@@ -66,6 +66,9 @@ class FrmSmtpInit {
         // Emails for an entry --- admin
         require_once FRM_SMTP_BASE_URL.'/shortcodes/admin/frm-emails-entry.php';
 
+        // Email status --- admin
+        require_once FRM_SMTP_BASE_URL.'/shortcodes/admin/frm-email-status.php';
+
     }
 
 }
