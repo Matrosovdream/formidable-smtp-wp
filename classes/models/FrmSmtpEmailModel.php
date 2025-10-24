@@ -23,7 +23,7 @@ class FrmSmtpEmailModel extends FrmSmptAbstractModel {
      */
     private const STATUS_MAP = [
         0 => 'Sent',
-        1 => 'Failed',
+        1 => 'Sent',
         2 => 'Waiting',
         3 => 'Confirmed',
     ];
