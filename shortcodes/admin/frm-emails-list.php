@@ -176,6 +176,7 @@ function frm_emails_list_shortcode($atts = []) {
                 <th>Email From</th>
                 <th>Email To</th>
                 <th>Status</th>
+                <th>Opened</th>
                 <th>Date</th>
             </tr>
             </thead>
@@ -189,6 +190,7 @@ function frm_emails_list_shortcode($atts = []) {
                 $from     = (string)($r['email_from'] ?? '');
                 $to       = (string)($r['email_to'] ?? '');
                 $status   = $r['status'];
+                $opened = isset( $r['is_opened'] ) && $r['is_opened'] ? 'Yes' : 'No';
                 $dateRaw  = (string)($r['date_sent'] ?? '');
                 $dateFmt  = $dateRaw ? date_i18n('Y-m-d H:i', strtotime($dateRaw)) : '';
                 $html     = (string)($r['content_html'] ?? '');
@@ -208,6 +210,7 @@ function frm_emails_list_shortcode($atts = []) {
                     <td>
                         <?php echo do_shortcode('[frm-email-status status="' . esc_attr($status) . '"]'); ?>
                     </td>
+                    <td><?php echo $opened; ?></td>
                     <td><?php echo esc_html($dateFmt); ?></td>
                 </tr>
             <?php endforeach; endif; ?>

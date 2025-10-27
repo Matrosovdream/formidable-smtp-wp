@@ -80,6 +80,7 @@ function frm_emails_entry_shortcode($atts = []) {
                 $status   = $r['status'];
                 $dateRaw  = (string)($r['date_sent'] ?? '');
                 $dateFmt  = $dateRaw ? date_i18n('Y-m-d H:i', strtotime($dateRaw)) : '';
+                $opened = isset( $r['is_opened'] ) && $r['is_opened'] ? 'Yes' : 'No';
 
                 $html     = (string)($r['content_html'] ?? '');
                 $plain    = (string)($r['content_plain'] ?? '');
@@ -109,6 +110,7 @@ function frm_emails_entry_shortcode($atts = []) {
                                 </div>
                             </div>
                             <div class="fel-row"><div class="fel-label">Date</div><div><?php echo esc_html($dateFmt); ?></div></div>
+                            <div class="fel-row"><div class="fel-label">Opened</div><div><?php echo $opened; ?></div></div>
                         </div>
                         <div class="fel-actions">
                             <a href="#" class="fel-btn fel-view" data-tpl="<?php echo esc_attr($tpl_id); ?>" data-title="<?php echo esc_attr($subject); ?>">View content</a>
