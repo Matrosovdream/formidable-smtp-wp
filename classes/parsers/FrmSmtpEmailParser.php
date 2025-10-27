@@ -188,6 +188,7 @@ class FrmSmtpEmailParser {
             'attachments'    => isset( $o['attachments'] ) ? (int) $o['attachments'] : 0,
             'initiator_name' => isset( $o['initiator_name'] ) ? (string) $o['initiator_name'] : null,
             'initiator_file' => isset( $o['initiator_file'] ) ? (string) $o['initiator_file'] : null,
+            'original_log_id' => isset( $o['id'] ) ? (int) $o['id'] : null,
         ];
     }
 
