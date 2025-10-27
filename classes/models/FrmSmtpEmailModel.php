@@ -131,13 +131,19 @@ class FrmSmtpEmailModel extends FrmSmptAbstractModel {
             $r['status_code'] = $code;
             $r['status']      = self::statusToText( $code, $r['error_text'] ?? null );
 
-            // Load events
-            $r['events'] = $this->eventModel->getEventsByLogId( $r['original_log_id'] );
-
             $r['is_opened'] = false;
-            if( in_array( 'open-email', $r['events'] ) ) {
-                $r['is_opened'] = true;    
+
+            // Load events
+            if( $r['original_log_id'] ) {
+                $r['events'] = $this->eventModel->getEventsByLogId( $r['original_log_id'] );
+
+                
+                if( in_array( 'open-email', $r['events'] ) ) {
+                    $r['is_opened'] = true;    
+                }
             }
+            
+            
             
         }
         unset( $r );
