@@ -48,6 +48,9 @@ class FrmSmtpInit {
         // Shipment model
         require_once FRM_SMTP_BASE_URL.'/classes/models/FrmSmtpEmailModel.php';
 
+        // Event model
+        require_once FRM_SMTP_BASE_URL.'/classes/models/FrmSmtpEmailEventModel.php';
+
     }
 
     private function include_cron() {
