@@ -150,9 +150,11 @@ class FrmSmtpEmailModel extends FrmSmptAbstractModel {
             } ) );
         }
 
+        /*
         echo '<pre>';
         print_r($rows);
         echo '</pre>';
+        */
 
         return $rows;
     }
