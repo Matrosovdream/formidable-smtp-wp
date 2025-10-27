@@ -22,7 +22,7 @@ class FrmSmtpEmailModel extends FrmSmptAbstractModel {
      * Feel free to adjust. You can also override via the 'frm_smtp_status_map' filter.
      */
     private const STATUS_MAP = [
-        0 => 'Sent',
+        0 => 'Failed',
         1 => 'Sent',
         2 => 'Waiting',
         3 => 'Confirmed',
@@ -43,11 +43,11 @@ class FrmSmtpEmailModel extends FrmSmptAbstractModel {
         $map = apply_filters( 'frm_smtp_status_map', self::STATUS_MAP );
 
         if ( ! empty( $errorText ) ) {
-            return $map[1] ?? 'Failed';
+            return $map[0] ?? 'Failed';
         }
 
         // Default to "Sent" if null/unknown.
-        return $map[ $code ?? 0 ] ?? ( $map[0] ?? 'Sent' );
+        return $map[ $code ?? 0 ] ?? ( $map[0] ?? 'Failed' );
     }
 
     /**
