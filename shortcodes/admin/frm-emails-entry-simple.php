@@ -3,8 +3,11 @@ if ( ! defined( 'ABSPATH' ) ) { exit; }
 
 /**
  * Shortcode: [frm-emails-entry-simple entry="12345"]
- * Output (one line per email):
- *   Status - Subject - Date (MM/DD)
+ * Output: status icon (with tooltip) - Subject - Date (MM/DD)
+ * Colors:
+ *   Failed → red
+ *   Sent / Waiting → blue
+ *   Confirmed → green
  */
 add_action('init', function () {
     add_shortcode('frm-emails-entry-simple', 'frm_emails_entry_simple_shortcode');
@@ -38,25 +41,54 @@ function frm_emails_entry_simple_shortcode($atts = []) {
         return '<div>No emails found.</div>';
     }
 
-    ob_start();
-    echo '<div class="frm-emails-entry-simple-list">';
-    foreach ( $rows as $r ) {
-        $subject = (string)($r['subject'] ?? '');
-        $status  = (string)($r['status'] ?? '');
-        $dateRaw = (string)($r['date_sent'] ?? '');
-        $date    = $dateRaw ? date_i18n('m/d', strtotime($dateRaw)) : '';
+    ob_start(); ?>
 
-        // Render status via shortcode
-        $status_html = do_shortcode('[frm-email-status status="' . esc_attr($status) . '"]');
+    <style>
+        .frm-emails-entry-simple-line {
+            font-size: 10px;
+            line-height: 1.1em;
+            margin-bottom: 0px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .fel-icon {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        .fel-icon.red { background-color: #dc2626; }   /* Failed */
+        .fel-icon.blue { background-color: #2563eb; }  /* Sent, Waiting */
+        .fel-icon.green { background-color: #16a34a; } /* Confirmed */
+        .fel-icon.gray { background-color: #6b7280; }  /* fallback */
+    </style>
 
-        echo '<div class="frm-emails-entry-simple-line">'
-            . $status_html
-            . ' - '
-            . esc_html($subject)
-            . ' - '
-            . esc_html($date)
-            . '</div>';
-    }
-    echo '</div>';
+    <div class="frm-emails-entry-simple-list">
+        <?php foreach ( $rows as $key => $r ) :
+            $subject = (string)($r['subject'] ?? '');
+            $status  = (string)($r['status'] ?? '');
+            $dateRaw = (string)($r['date_sent'] ?? '');
+            $date    = $dateRaw ? date_i18n('m/d', strtotime($dateRaw)) : '';
+
+            // Determine color
+            switch ( $status ) {
+                case 'Failed':     $color = 'red'; break;
+                case 'Sent':       $color = 'blue'; break;
+                case 'Waiting':    $color = 'blue'; break;
+                case 'Confirmed':  $color = 'green'; break;
+                default:           $color = 'gray'; break;
+            }
+        ?>
+            <div class="frm-emails-entry-simple-line">
+                <span class="fel-icon <?php echo esc_attr($color); ?>" 
+                      title="<?php echo esc_attr($status); ?>"></span>
+                <span><?php echo esc_html($subject); ?></span>
+                <span>- <?php echo esc_html($date); ?></span>
+            </div>
+        <?php endforeach; ?>
+    </div>
+
+    <?php
     return ob_get_clean();
 }
