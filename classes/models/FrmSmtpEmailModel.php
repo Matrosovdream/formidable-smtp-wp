@@ -7,6 +7,7 @@ class FrmSmtpEmailModel extends FrmSmptAbstractModel {
 
     /** @var string Fully-qualified table name incl. prefix */
     protected string $table;
+    protected $eventModel;
 
     /** Whitelisted sortable columns */
     private const SORTABLE = [
@@ -32,6 +33,9 @@ class FrmSmtpEmailModel extends FrmSmptAbstractModel {
         global $wpdb;
         $this->db    = $wpdb;
         $this->table = $this->db->prefix . 'frm_emails_log';
+
+        // Other models
+        $this->eventModel = new FrmSmtpEmailEventModel();
     }
 
     /**
@@ -126,6 +130,15 @@ class FrmSmtpEmailModel extends FrmSmptAbstractModel {
             $code            = isset( $r['status'] ) ? (int) $r['status'] : null;
             $r['status_code'] = $code;
             $r['status']      = self::statusToText( $code, $r['error_text'] ?? null );
+
+            // Load events
+            $r['events'] = $this->eventModel->getEventsByLogId( $r['original_log_id'] );
+
+            $r['is_opened'] = false;
+            if( in_array( 'open-email', $r['events'] ) ) {
+                $r['is_opened'] = true;    
+            }
+            
         }
         unset( $r );
 
@@ -136,6 +149,10 @@ class FrmSmtpEmailModel extends FrmSmptAbstractModel {
                 return mb_stripos( (string) $row['status'], $needle ) !== false;
             } ) );
         }
+
+        echo '<pre>';
+        print_r($rows);
+        echo '</pre>';
 
         return $rows;
     }
@@ -203,6 +220,7 @@ class FrmSmtpEmailModel extends FrmSmptAbstractModel {
             'attachments',
             'initiator_name',
             'initiator_file',
+            'original_log_id',
         ];
 
         $formats = [
@@ -223,6 +241,7 @@ class FrmSmtpEmailModel extends FrmSmptAbstractModel {
             'attachments'    => '%d',
             'initiator_name' => '%s',
             'initiator_file' => '%s',
+            'original_log_id'=> '%d',
         ];
 
         foreach ( $rows as &$r ) {
