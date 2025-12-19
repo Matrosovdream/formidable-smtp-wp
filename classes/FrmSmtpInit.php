@@ -65,6 +65,7 @@ class FrmSmtpInit {
 
         // Emails list --- admin
         require_once FRM_SMTP_BASE_URL.'/shortcodes/admin/frm-emails-list.php';
+        require_once FRM_SMTP_BASE_URL.'/shortcodes/admin/frm-emails-list-storage.php';
 
         // Emails for an entry --- admin
         require_once FRM_SMTP_BASE_URL.'/shortcodes/admin/frm-emails-entry.php';
