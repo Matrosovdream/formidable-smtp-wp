@@ -3,7 +3,7 @@ if ( ! defined( 'ABSPATH' ) ) { exit; }
 
 class FrmSmtpMigrations {
 
-    public const DB_VERSION     = '1.0.5'; // bumped
+    public const DB_VERSION     = '1.0.6'; // bumped
     public const VERSION_OPTION = 'frm_smtp_db_version';
 
     public static function install(): void {
@@ -33,6 +33,7 @@ class FrmSmtpMigrations {
             initiator_name varchar(255) NULL,
             initiator_file text NULL,
             original_log_id bigint(20) unsigned NULL,
+            updated tinyint(3) unsigned DEFAULT NULL,
             PRIMARY KEY  (id),
             KEY idx_entry_id (entry_id),
             KEY idx_form_id (form_id),
