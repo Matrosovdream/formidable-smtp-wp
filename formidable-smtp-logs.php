@@ -23,21 +23,47 @@ require_once 'classes/FrmSmtpInit.php';
 add_action('init', 'FrmSmtpInit');
 function FrmSmtpInit() {
     
-    if( isset( $_GET['lgg'] ) ) {
+    if( isset( $_GET['update_exported'] ) ) {
 
-        // Somewhere in an admin/CLI context:
-        $parser = new FrmSmtpEmailParser();
-        $result = $parser->migrate(50); // chunk size 100 (default)
+        smtpUpdateExported();
+        exit();
 
-        echo '<pre>'; 
-        print_r($result); 
-        echo '</pre>';
-        die();
+    }
+
+    if( isset( $_GET['get_unexported'] ) ) {
+
+        smtpGetUnexported();
+        exit();
 
     }
 
 }
 
+function smtpGetUnexported() {
+
+    global $wpdb;
+    $table = $wpdb->prefix . 'frm_emails_log';
+
+    $query = "SELECT COUNT(*) as count FROM {$table} WHERE updated IS NULL";
+
+    $result = $wpdb->get_var($query);
+
+    echo 'Unexported logs count: ' . $result;
+
+}
+
+function smtpUpdateExported() {
+
+    global $wpdb;
+    $table = $wpdb->prefix . 'frm_emails_log';
+
+    $query = "UPDATE {$table} SET updated = 1 WHERE id < 3210613354";
+
+    $wpdb->query($query);
+
+    echo 'Exported status updated for logs.';
+
+}
 
 
 
