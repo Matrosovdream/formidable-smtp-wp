@@ -19,6 +19,18 @@ function frm_emails_list_storage_shortcode($atts = []) {
         return '<div style="color:#b00">Storage plugin not active.</div>';
     }
 
+    // Enqueue jQuery UI Datepicker ONLY when shortcode is rendered
+    wp_enqueue_script('jquery');
+    wp_enqueue_script('jquery-ui-datepicker');
+
+    // Load a jQuery UI theme CSS so the calendar looks correct
+    wp_enqueue_style(
+        'jquery-ui-theme-smoothness',
+        'https://code.jquery.com/ui/1.13.3/themes/smoothness/jquery-ui.css',
+        [],
+        '1.13.3'
+    );
+
     $q = wp_unslash($_GET);
 
     // Read raw values for UI
@@ -140,11 +152,11 @@ function frm_emails_list_storage_shortcode($atts = []) {
             <div class="field">
                 <label for="fe-date-from">Date From</label>
                 <!-- US date format via jQuery UI datepicker -->
-                <input id="fe-date-from" type="text" class="frm-date" name="date_from" value="<?php echo esc_attr($date_from); ?>" placeholder="MM/DD/YYYY" autocomplete="off">
+                <input id="fe-date-from" type="date" class="frm-date" name="date_from" value="<?php echo esc_attr($date_from); ?>" placeholder="MM/DD/YYYY" autocomplete="off">
             </div>
             <div class="field">
                 <label for="fe-date-to">Date To</label>
-                <input id="fe-date-to" type="text" class="frm-date" name="date_to" value="<?php echo esc_attr($date_to); ?>" placeholder="MM/DD/YYYY" autocomplete="off">
+                <input id="fe-date-to" type="date" class="frm-date" name="date_to" value="<?php echo esc_attr($date_to); ?>" placeholder="MM/DD/YYYY" autocomplete="off">
             </div>
 
             <input type="hidden" name="fel_per_page" value="<?php echo esc_attr($per_page); ?>">
@@ -658,3 +670,6 @@ function frm_emails_storage_render_pager(array $p): string {
     <?php
     return ob_get_clean();
 }
+
+
+
