@@ -52,6 +52,8 @@ class FrmSmtpEmailParser {
         $processed = 0;
         $chunks    = 0;
         $lastId    = $startAfterId;
+        $rowsForUpsertAll = [];
+        $errors = [];
 
         while ( true ) {
             $batch = $this->fetchOriginBatch( $chunkSize, $lastId );
@@ -66,7 +68,14 @@ class FrmSmtpEmailParser {
             }
 
             if ( ! empty( $rowsForUpsert ) ) {
-                $this->model->multipleUpdateCreate( $rowsForUpsert );
+                $updateRes = $this->model->multipleUpdateCreate( $rowsForUpsert );
+
+                //$rowsForUpsertAll = array_merge( $rowsForUpsertAll, $rowsForUpsert );
+
+                if( !empty($updateRes['errors']) ) {
+                    $errors = array_merge( $errors, $updateRes['errors'] );
+                }
+
             }
 
             $processed += count( $batch );
@@ -77,6 +86,8 @@ class FrmSmtpEmailParser {
             'processed' => $processed,
             'chunks'    => $chunks,
             'last_id'   => $lastId,
+            'errors'    => $errors,
+            //'upserted_rows' => $rowsForUpsertAll, // Too verbose for now, can be added back for debugging if needed
         ];
     }
 
