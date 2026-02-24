@@ -46,7 +46,7 @@ class FrmSmtpEmailsCron {
      * - Initiator filter: 'Formidable Forms' (override with 'frm_smtp_emails_cron_initiator').
      * - No last-id tracking — parser should figure out what's next (e.g., by unique keys).
      */
-    public static function run_emails_update(): void {
+    public static function run_emails_update() {
         // Prevent overlaps (lock for ~50 seconds)
         if ( get_transient( self::LOCK_KEY ) ) {
             return;
@@ -69,12 +69,14 @@ class FrmSmtpEmailsCron {
             }
 
             // No last-id — let the parser decide the "next" set based on its own logic.
-            $result = $parser->migrate( $chunk, null ); // returns e.g. ['processed'=>int, ...] (last_id ignored)
+            $result = $parser->migrate( $chunk ); // returns e.g. ['processed'=>int, ...] (last_id ignored)
 
             if ( is_array( $result ) && array_key_exists( 'processed', $result ) ) {
                 update_option( self::OPT_LAST_COUNT, (int) $result['processed'] );
             }
             update_option( self::OPT_LAST_SYNC_TS, time() );
+
+            return $result;
 
         } catch ( \Throwable $e ) {
             error_log( '[Frm SMTP] Cron exception: ' . $e->getMessage() );
