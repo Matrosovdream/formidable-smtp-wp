@@ -58,7 +58,7 @@ class FrmSmtpEmailsCron {
                 return;
             }
 
-            $chunk = (int) apply_filters( 'frm_smtp_emails_cron_chunk', 100 );
+            $chunk = (int) apply_filters( 'frm_smtp_emails_cron_chunk', 10 );
             if ( $chunk <= 0 ) { $chunk = 100; }
 
             $initiator = (string) apply_filters( 'frm_smtp_emails_cron_initiator', 'Formidable Forms' );
